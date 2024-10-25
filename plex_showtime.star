@@ -154,31 +154,55 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     break
 
                             # thumb if art not available
+                            validated_image = ""
                             for key in metadata_keys:
                                 if key == "art":
                                     art_type = key
-                                    break
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
+                                        break
                                 if key == "parentArt":
                                     art_type = key
-                                    break
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
+                                        break
                                 if key == "grandparentArt":
                                     art_type = key
-                                    break
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
+                                        break
                                 elif key == "thumb" and metadata_list[random_index]["thumb"].endswith("/-1") == False:
                                     art_type = key
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
                                 elif key == "parentThumb":
                                     art_type = key
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
                                 elif key == "grandparentThumb":
                                     art_type = key
-
-                            if art_type != "":
-                                img_url = base_url + metadata_list[random_index][art_type]
-                                img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    img_url = base_url + metadata_list[random_index][art_type]
+                                    img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if img != None:
+                                        validated_image = img
 
                             if img == None:
-                                if debug_output:
-                                    print("Media image not detected, using Plex banner")
-                                img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
+                                if len(validated_image) > 0:
+                                    img = validated_image
+                                else:
+                                    if debug_output:
+                                        print("Media image not detected, using Plex banner")
+                                    img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
                             elif debug_output:
                                 print("Using thumbnail type: " + art_type + ": " + img_url)
 
