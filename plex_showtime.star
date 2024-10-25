@@ -150,7 +150,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
 
                             is_music_video = False
                             for key in metadata_keys:
-                                if key == "subtype" and metadata["subtype"] == "clip":
+                                if key == "subtype" and metadata_list[random_index]["subtype"] == "clip":
                                     is_music_video = True
                                     break
 
@@ -186,9 +186,9 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                 print("Using thumbnail type: " + art_type)
 
                             media_type = "movie"
-                            if endpoint_map["type"] == "season":
+                            if metadata_list[random_index]["type"] == "season":
                                 media_type = "TV"
-                            elif endpoint_map["type"] == "album" or is_music_video:
+                            elif metadata_list[random_index]["type"] == "album" or is_music_video:
                                 media_type = "music"
 
                             header_text = endpoint_map["title"] + " " + media_type
