@@ -215,11 +215,12 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
 
                             body_text = grandparent_title + parent_title + title
 
-                            marquee_text = header_text + " - " + body_text
+                            marquee_text = header_text.strip() + " - " + body_text.strip()
                             max_length = 59
                             if len(marquee_text) > max_length:
                                 marquee_text = body_text
-                                marquee_text = marquee_text[0:max_length - 3] + "..."
+                                if len(marquee_text) > max_length:
+                                    marquee_text = marquee_text[0:max_length - 3] + "..."
 
                             if debug_output:
                                 print("Marquee text: " + marquee_text)
