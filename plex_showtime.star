@@ -317,7 +317,7 @@ def display_banner(debug_output):
 def get_random_index(item, a_list, debug_output):
     random_index = random.number(0, len(a_list) - 1)
     if debug_output:
-        print("Setting cached value for item " + item + ": " + str(random_index))
+        print("Random number for item " + item + ": " + str(random_index))
     return random_index
 
 def get_data(url, debug_output, headerMap = {}, ttl_seconds = 20):
