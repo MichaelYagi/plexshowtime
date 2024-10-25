@@ -42,7 +42,7 @@ def main(config):
         plex_endpoints.append({"title": "Recently Played", "endpoint": "/status/sessions/history/all?sort=viewedAt:desc"})
 
     if show_library == True:
-        plex_endpoints.append({"title": "Plex Library", "endpoint": "/status/sessions/history/all"})
+        plex_endpoints.append({"title": "Plex Library", "endpoint": "/library/sections"})
 
     endpoint_map = {"title": "Plex", "endpoint": ""}
     if len(plex_endpoints) > 0:
@@ -67,6 +67,10 @@ def main(config):
     return get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds)
 
 def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds):
+    base_url = plex_server_url
+    if base_url.endswith("/"):
+        base_url = base_url[0:len(base_url) - 1]
+
     display_message_string = ""
     if plex_server_url == "" or plex_api_key == "":
         display_message_string = "Plex API URL and Plex API key must not be blank"
@@ -105,13 +109,44 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                     img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
 
                     if output["MediaContainer"]["size"] > 0:
-                        if filter_movie and filter_music and filter_tv:
+                        metadata_list = []
+                        if endpoint_map["title"] == "Plex Library":
+                            if filter_movie or filter_music or filter_tv:
+                                # Get random library
+                                library_list = output["MediaContainer"]["Directory"]
+                                allowable_media = []
+                                if filter_movie:
+                                    allowable_media.append("movie")
+                                if filter_tv:
+                                    allowable_media.append("show")
+                                if filter_music:
+                                    allowable_media.append("artist")
+                                
+                                if len(allowable_media) > 0:
+                                    allowed_media = allowable_media[random.number(0, len(allowable_media) - 1)]
+                                    library_key = 0
+                                    for library in library_list:
+                                        if library["type"] == allowed_media:
+                                            library_key = library["key"]
+                                            break
+                                else:
+                                    display_message_string = "Could not get library content"
+
+                                library_url = base_url + "/library/sections/" + library_key + "/all"
+                                library_content = get_data(library_url, debug_output, headerMap, ttl_seconds)
+                                library_output = json.decode(library_content, None)
+                                if library_output != None and library_output["MediaContainer"]["size"] > 0:
+                                    metadata_list = library_output["MediaContainer"]["Metadata"]
+                                else:
+                                    display_message_string = "Could not get library content"
+                            else:
+                                display_message_string = "All filters enabled"
+                        elif filter_movie and filter_music and filter_tv:
                             metadata_list = output["MediaContainer"]["Metadata"]
                             if endpoint_map["title"] != "Plex Library" and len(metadata_list) > 9:
                                 metadata_list = metadata_list[0:9]
                         else:
                             m_list = output["MediaContainer"]["Metadata"]
-                            metadata_list = []
                             for metadata in m_list:
                                 keys = metadata.keys()
                                 is_clip = False
@@ -124,9 +159,9 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     metadata_list.append(metadata)
                                 if filter_tv and is_clip:
                                     metadata_list.append(metadata)
-                                if filter_music and (metadata["type"] == "album" or metadata["type"] == "track"):
+                                if filter_music and (metadata["type"] == "album" or metadata["type"] == "track" or metadata["type"] == "artist"):
                                     metadata_list.append(metadata)
-                                if filter_tv and (metadata["type"] == "season" or metadata["type"] == "episode"):
+                                if filter_tv and (metadata["type"] == "season" or metadata["type"] == "episode" or metadata["type"] == "show"):
                                     metadata_list.append(metadata)
                                 if endpoint_map["title"] != "Plex Library" and len(metadata_list) > 9:
                                     break
@@ -138,10 +173,6 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             if debug_output:
                                 print("List size: " + str(len(metadata_list)))
                                 print("Random index: " + str(random_index))
-
-                            base_url = plex_server_url
-                            if base_url.endswith("/"):
-                                base_url = base_url[0:len(base_url) - 1]
 
                             img = None
                             art_type = ""
@@ -211,9 +242,9 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             media_type = "Movie"
                             if is_clip:
                                 media_type = "Clip"
-                            elif metadata_list[random_index]["type"] == "season" or metadata_list[random_index]["type"] == "episode":
+                            elif metadata_list[random_index]["type"] == "season" or metadata_list[random_index]["type"] == "episode" or metadata_list[random_index]["type"] == "show":
                                 media_type = "TV"
-                            elif metadata_list[random_index]["type"] == "album" or metadata_list[random_index]["type"] == "track":
+                            elif metadata_list[random_index]["type"] == "album" or metadata_list[random_index]["type"] == "track" or metadata_list[random_index]["type"] == "artist":
                                 media_type = "Music"
                             elif metadata_list[random_index]["type"] == "movie":
                                 media_type = "Movie"
@@ -365,10 +396,11 @@ def get_data(url, debug_output, headerMap = {}, ttl_seconds = 20):
     if res == None:
         return None
 
+    if debug_output:
+        print("status: " + str(res.status_code))
+        print("Requested url: " + str(url))
+
     if res.status_code != 200:
-        if debug_output:
-            print("status: " + str(res.status_code))
-            print("Requested url: " + str(url))
         return None
     else:
         data = res.body()
