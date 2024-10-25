@@ -124,9 +124,9 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     metadata_list.append(metadata)
                                 if filter_tv and is_clip:
                                     metadata_list.append(metadata)
-                                if filter_music and metadata["type"] == "album":
+                                if filter_music and (metadata["type"] == "album" or metadata["type"] == "track"):
                                     metadata_list.append(metadata)
-                                if filter_tv and metadata["type"] == "season":
+                                if filter_tv and (metadata["type"] == "season" or metadata["type"] == "episode"):
                                     metadata_list.append(metadata)
                                 if endpoint_map["title"] != "Plex Library" and len(metadata_list) > 9:
                                     break
@@ -185,9 +185,9 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             media_type = "Movie"
                             if is_clip:
                                 media_type = "Clip"
-                            elif metadata_list[random_index]["type"] == "season":
+                            elif metadata_list[random_index]["type"] == "season" or metadata_list[random_index]["type"] == "episode":
                                 media_type = "TV"
-                            elif metadata_list[random_index]["type"] == "album":
+                            elif metadata_list[random_index]["type"] == "album" or metadata_list[random_index]["type"] == "track":
                                 media_type = "Music"
                             elif metadata_list[random_index]["type"] == "movie":
                                 media_type = "Movie"
