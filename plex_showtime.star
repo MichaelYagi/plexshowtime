@@ -115,7 +115,16 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             m_list = output["MediaContainer"]["Metadata"]
                             metadata_list = []
                             for metadata in m_list:
-                                if filter_movie and metadata["type"] == "movie":
+                                keys = metadata.keys()
+                                is_music_video = False
+                                for key in keys:
+                                    if key == "subtype" and metadata["subtype"] == "clip":
+                                        is_music_video = True
+                                        break
+
+                                if filter_movie and metadata["type"] == "movie" and is_music_video == False:
+                                    metadata_list.append(metadata)
+                                if filter_music and metadata["type"] == "movie" and is_music_video == True:
                                     metadata_list.append(metadata)
                                 if filter_music and metadata["type"] == "album":
                                     metadata_list.append(metadata)
@@ -138,6 +147,12 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
 
                             img = None
                             art_type = ""
+
+                            is_music_video = False
+                            for key in metadata_keys:
+                                if key == "subtype" and metadata["subtype"] == "clip":
+                                    is_music_video = True
+                                    break
 
                             # thumb if art not available
                             for key in metadata_keys:
@@ -170,7 +185,13 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             elif debug_output:
                                 print("Using thumbnail type: " + art_type)
 
-                            header_text = endpoint_map["title"]
+                            media_type = "movie"
+                            if endpoint_map["type"] == "season":
+                                media_type = "TV"
+                            elif endpoint_map["type"] == "album" or is_music_video:
+                                media_type = "music"
+
+                            header_text = endpoint_map["title"] + " " + media_type
 
                             if debug_output:
                                 print(header_text)
