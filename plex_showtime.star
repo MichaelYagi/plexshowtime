@@ -195,6 +195,8 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
                                         break
@@ -202,6 +204,8 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
                                         break
@@ -209,6 +213,8 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
                                         break
@@ -216,18 +222,24 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
                                 elif key == "parentThumb":
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
                                 elif key == "grandparentThumb":
                                     art_type = key
                                     img_url = base_url + metadata_list[random_index][art_type]
                                     img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+                                    if debug_output:
+                                        print(key + " lookup")
                                     if img != None:
                                         validated_image = img
 
