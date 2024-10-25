@@ -28,7 +28,7 @@ def main(config):
     filter_movie = config.bool("filter_movie", True)
     filter_tv = config.bool("filter_tv", True)
     filter_music = config.bool("filter_music", True)
-    show_playing = config.bool("show_playing", True)
+    show_playing = config.bool("show_playing", False)
     fit_screen = config.bool("fit_screen", True)
     debug_output = config.bool("debug_output", False)
 
@@ -481,7 +481,7 @@ def get_schema():
                 name = "Show playing",
                 desc = "Show now playing.",
                 icon = "",
-                default = True,
+                default = False,
             ),
             schema.Toggle(
                 id = "show_library",
