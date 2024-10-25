@@ -21,6 +21,9 @@ def main(config):
     font_color = config.str("font_color", "#FFFFFF")
     show_recent = config.bool("show_recent", True)
     show_added = config.bool("show_added", True)
+    filter_movie = config.bool("filter_movie", True)
+    filter_tv = config.bool("filter_tv", True)
+    filter_music = config.bool("filter_music", True)
     show_playing = config.bool("show_playing", True)
     fit_screen = config.bool("fit_screen", True)
 
@@ -52,12 +55,15 @@ def main(config):
         print("CONFIG - show_recent: " + str(show_recent))
         print("CONFIG - show_added: " + str(show_added))
         print("CONFIG - show_playing: " + str(show_playing))
+        print("CONFIG - filter_movie: " + str(filter_movie))
+        print("CONFIG - filter_tv: " + str(filter_tv))
+        print("CONFIG - filter_music: " + str(filter_music))
         print("CONFIG - font_color: " + font_color)
         print("CONFIG - fit_screen: " + str(fit_screen))
             
-    return get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, font_color, ttl_seconds)
+    return get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds)
 
-def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, font_color, ttl_seconds):
+def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds):
     if plex_server_url == "" or plex_api_key == "":
         if debug_output:
             print("Plex API URL and Plex API key must not be blank")
@@ -98,83 +104,101 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                         img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
 
                         if output["MediaContainer"]["size"] > 0:
-                            metadata_list = output["MediaContainer"]["Metadata"]
-                            random_index = random.number(0, len(metadata_list) - 1) # 45 test
-                            metadata_keys = metadata_list[random_index].keys()
+                            if filter_movie and filter_music and filter_tv:
+                                metadata_list = output["MediaContainer"]["Metadata"]
+                            else:
+                                m_list = output["MediaContainer"]["Metadata"]
+                                metadata_list = []
+                                for metadata in m_list:
+                                    if filter_movie and metadata["type"] == "movie":
+                                        metadata_list.append(metadata)
+                                    if filter_music and metadata["type"] == "album":
+                                        metadata_list.append(metadata)
+                                    if filter_tv and metadata["type"] == "season":
+                                        metadata_list.append(metadata)
 
-                            if debug_output:
-                                print("Random index: " + str(random_index))
+                            if len(metadata_list) > 0:
+                                random_index = random.number(0, len(metadata_list) - 1) # 45 test
+                                metadata_keys = metadata_list[random_index].keys()
 
-                            base_url = plex_server_url
-                            if base_url.endswith("/"):
-                                base_url = base_url[0:len(base_url)-1]
-
-                            img = None
-                            art_type = ""
-                            # thumb if art not available
-                            for key in metadata_keys:
-                                if key == "art":
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-                                    break
-                                if key == "parentArt":
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-                                    break
-                                if key == "grandparentArt":
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-                                    break
-                                elif key == "thumb" and metadata_list[random_index]["thumb"].endswith("/-1") == False:
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-                                elif key == "parentThumb":
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-                                elif key == "grandparentThumb":
-                                    art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
-
-                            if img == None:
                                 if debug_output:
-                                    print("Media image not detected, using Plex banner")
-                                img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
+                                    print("List size: " + str(len(metadata_list)))
+                                    print("Random index: " + str(random_index))
+
+                                base_url = plex_server_url
+                                if base_url.endswith("/"):
+                                    base_url = base_url[0:len(base_url)-1]
+
+                                img = None
+                                art_type = ""
+                                # thumb if art not available
+                                for key in metadata_keys:
+                                    if key == "art":
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+                                        break
+                                    if key == "parentArt":
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+                                        break
+                                    if key == "grandparentArt":
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+                                        break
+                                    elif key == "thumb" and metadata_list[random_index]["thumb"].endswith("/-1") == False:
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+                                    elif key == "parentThumb":
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+                                    elif key == "grandparentThumb":
+                                        art_type = key
+                                        img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+
+                                if img == None:
+                                    if debug_output:
+                                        print("Media image not detected, using Plex banner")
+                                    img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
+                                else:
+                                    if debug_output:
+                                        print("Using thumbnail type: " + art_type)
+
+                                header_text = endpoint_map["title"]
+
+                                if debug_output:
+                                    print(header_text)
+
+                                title = ""
+                                parent_title = ""
+                                grandparent_title = ""
+                                for key in metadata_keys:
+                                    if key == "title":
+                                        title = metadata_list[random_index][key]
+                                    elif key == "parentTitle":
+                                        parent_title = metadata_list[random_index][key]
+                                    elif key == "grandparentTitle":
+                                        grandparent_title = metadata_list[random_index][key]
+
+                                if len(grandparent_title) > 0:
+                                    grandparent_title = grandparent_title + " - "
+                                if len(parent_title) > 0:
+                                    parent_title = parent_title + ": "
+                                
+                                body_text = grandparent_title + parent_title + title
+
+                                marquee_text = header_text + " - " + body_text
+                                max_length = 59
+                                if len(marquee_text) > max_length:
+                                    marquee_text = body_text
+                                    marquee_text = marquee_text[0:max_length-3] + "..."
+
+                                if debug_output:
+                                    print("Marquee text: " + marquee_text)
+                                    print("Full title: " + header_text + " - " + body_text)
                             else:
                                 if debug_output:
-                                    print("Using thumbnail type: " + art_type)
-
-                            header_text = endpoint_map["title"]
-
-                            if debug_output:
-                                print(header_text)
-
-                            title = ""
-                            parent_title = ""
-                            grandparent_title = ""
-                            for key in metadata_keys:
-                                if key == "title":
-                                    title = metadata_list[random_index][key]
-                                elif key == "parentTitle":
-                                    parent_title = metadata_list[random_index][key]
-                                elif key == "grandparentTitle":
-                                    grandparent_title = metadata_list[random_index][key]
-
-                            if len(grandparent_title) > 0:
-                                grandparent_title = grandparent_title + " - "
-                            if len(parent_title) > 0:
-                                parent_title = parent_title + ": "
-                            
-                            body_text = grandparent_title + parent_title + title
-
-                            marquee_text = header_text + " - " + body_text
-                            max_length = 59
-                            if len(marquee_text) > max_length:
-                                marquee_text = body_text
-                                marquee_text = marquee_text[0:max_length-3] + "..."
-
-                            if debug_output:
-                                print("Marquee text: " + marquee_text)
-                                print("Full title: " + header_text + " - " + body_text)
+                                    print("No results for " + endpoint_map["title"]) 
+                                return display_banner(debug_output)
 
                         if fit_screen == True:
                             rendered_image = render.Image(
@@ -488,6 +512,27 @@ def get_schema():
             schema.Toggle(
                 id = "show_playing",
                 name = "Show playing",
+                desc = "Show now playing.",
+                icon = "",
+                default = True,
+            ),
+            schema.Toggle(
+                id = "filter_movie",
+                name = "Filter by movies",
+                desc = "Show recently played.",
+                icon = "",
+                default = True,
+            ),
+            schema.Toggle(
+                id = "filter_tv",
+                name = "Filter by TV shows",
+                desc = "Show recently added.",
+                icon = "",
+                default = True,
+            ),
+            schema.Toggle(
+                id = "filter_music",
+                name = "Filter by music",
                 desc = "Show now playing.",
                 icon = "",
                 default = True,
