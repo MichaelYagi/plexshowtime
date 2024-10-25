@@ -26,9 +26,9 @@ def main(config):
     filter_music = config.bool("filter_music", True)
     show_playing = config.bool("show_playing", True)
     fit_screen = config.bool("fit_screen", True)
+    debug_output = config.bool("debug_output", False)
 
     ttl_seconds = 5
-    debug_output = True
 
     plex_endpoints = []
 
@@ -68,11 +68,9 @@ def main(config):
 
 def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds):
     if plex_server_url == "" or plex_api_key == "":
-        if debug_output:
-            print("Plex API URL and Plex API key must not be blank")
-        return display_banner(debug_output)
+        return display_banner(debug_output, "Plex API URL and Plex API key must not be blank")
     elif endpoint_map["title"] == "Plex":
-        return display_banner(debug_output)
+        return display_banner(debug_output, "Select recent, added or played")
     else:
         headerMap = {
             "Accept": "application/json",
@@ -102,7 +100,6 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                         break
 
                 if valid_map == True:
-                    icon_img = get_data("https://michaelyagi.github.io/images/plex_icon.png", debug_output, {}, 604800)
                     marquee_text = endpoint_map["title"]
                     img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
 
@@ -228,9 +225,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                 print("Marquee text: " + marquee_text)
                                 print("Full title: " + header_text + " - " + body_text)
                         else:
-                            if debug_output:
-                                print("No results for " + endpoint_map["title"])
-                            return display_banner(debug_output)
+                            return display_banner(debug_output, "No results for " + endpoint_map["title"])
 
                     if fit_screen == True:
                         rendered_image = render.Image(
@@ -243,76 +238,87 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             src = img,
                         )
 
-                    return render.Root(
-                        child = render.Column(
-                            children = [
-                                render.Box(
-                                    width = 64,
-                                    height = 7,
-                                    child = render.Row(
-                                        expanded = True,
-                                        main_align = "space_evenly",
-                                        cross_align = "center",
-                                        children = [
-                                            render.Image(src = icon_img, width = 7, height = 7),
-                                            render.Padding(
-                                                pad = (0, 1, 0, 0),
-                                                child = render.Row(
-                                                    expanded = True,
-                                                    main_align = "space_evenly",
-                                                    cross_align = "center",
-                                                    children = [
-                                                        render.Marquee(
-                                                            scroll_direction = "horizontal",
-                                                            width = 64,
-                                                            offset_start = 64,
-                                                            offset_end = 64,
-                                                            child = render.Text(content = marquee_text, font = "tom-thumb", color = font_color),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ),
-                                        ],
-                                    ),
-                                ),
-                                render.Padding(
-                                    pad = (0, 0, 0, 0),
-                                    child = render.Row(
-                                        expanded = True,
-                                        main_align = "space_evenly",
-                                        cross_align = "center",
-                                        children = [rendered_image],
-                                    ),
-                                ),
-                            ],
-                        ),
-                    )
+                    return render_marquee(marquee_text, rendered_image, font_color, debug_output)
 
                 else:
-                    if debug_output:
-                        print("No valid results for " + endpoint_map["title"])
-                    return display_banner(debug_output)
+                    return display_banner(debug_output, "No valid results for " + endpoint_map["title"])
             else:
-                if debug_output:
-                    print("Possible malformed JSON for " + endpoint_map["title"])
-                return display_banner(debug_output)
+                return display_banner(debug_output, "Possible malformed JSON for " + endpoint_map["title"])
         else:
-            if debug_output:
-                print("Check API URL & key for " + endpoint_map["title"])
-            return display_banner(debug_output)
+            return display_banner(debug_output, "Check API URL & key for " + endpoint_map["title"])
 
-def display_banner(debug_output):
+def display_banner(debug_output, message = ""):
     img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, {}, 604800)  # thumb if art not available
+    
+    if debug_output == False:
+        return render.Root(
+            render.Row(
+                expanded = True,
+                main_align = "space_evenly",
+                cross_align = "center",
+                children = [
+                    render.Image(src = img, width = 64),
+                ],
+            ),
+        )
+    else:
+        if message == "":
+            message = "Oops, something went wrong"
+
+        rendered_image = render.Image(
+            width = 64,
+            src = img,
+        )
+        return render_marquee(message, rendered_image, "#FF0000", debug_output)
+
+def render_marquee(message, image, font_color, debug_output):
+    icon_img = get_data("https://michaelyagi.github.io/images/plex_icon.png", debug_output, {}, 604800)
+
     return render.Root(
-        render.Row(
-            expanded = True,
-            main_align = "space_evenly",
-            cross_align = "center",
+        child = render.Column(
             children = [
-                render.Image(src = img, width = 64, height = 32),
+                render.Box(
+                    width = 64,
+                    height = 7,
+                    child = render.Row(
+                        expanded = True,
+                        main_align = "space_evenly",
+                        cross_align = "center",
+                        children = [
+                            render.Image(src = icon_img, width = 7, height = 7),
+                            render.Padding(
+                                pad = (0, 1, 0, 0),
+                                child = render.Row(
+                                    expanded = True,
+                                    main_align = "space_evenly",
+                                    cross_align = "center",
+                                    children = [
+                                        render.Marquee(
+                                            scroll_direction = "horizontal",
+                                            width = 64,
+                                            offset_start = 64,
+                                            offset_end = 64,
+                                            child = render.Text(content = message, font = "tom-thumb", color = font_color),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                render.Padding(
+                    pad = (0, 0, 0, 0),
+                    child = render.Row(
+                        expanded = True,
+                        main_align = "space_evenly",
+                        cross_align = "center",
+                        children = [image],
+                    ),
+                ),
             ],
         ),
     )
+
 
 def get_random_index(item, a_list, debug_output):
     random_index = random.number(0, len(a_list) - 1)
@@ -371,6 +377,13 @@ def get_schema():
                 desc = "Fit image on screen.",
                 icon = "",
                 default = True,
+            ),
+            schema.Toggle(
+                id = "debug_output",
+                name = "Toggle debug messages",
+                desc = "Toggle debug messages. Will display the messages on the display if enabled.",
+                icon = "",
+                default = False,
             ),
             schema.Toggle(
                 id = "show_recent",
