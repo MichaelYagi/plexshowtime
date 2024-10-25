@@ -185,11 +185,11 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             elif debug_output:
                                 print("Using thumbnail type: " + art_type)
 
-                            media_type = "movie"
+                            media_type = "Movie"
                             if metadata_list[random_index]["type"] == "season":
                                 media_type = "TV"
                             elif metadata_list[random_index]["type"] == "album" or is_music_video:
-                                media_type = "music"
+                                media_type = "Music"
 
                             header_text = endpoint_map["title"] + " " + media_type
 
