@@ -20,6 +20,7 @@ def main(config):
     font_color = config.str("font_color", "#FFFFFF")
     show_recent = config.bool("show_recent", True)
     show_added = config.bool("show_added", True)
+    show_library = config.bool("show_library", True)
     filter_movie = config.bool("filter_movie", True)
     filter_tv = config.bool("filter_tv", True)
     filter_music = config.bool("filter_music", True)
@@ -39,6 +40,9 @@ def main(config):
 
     if show_recent == True:
         plex_endpoints.append({"title": "Recently Played", "endpoint": "/status/sessions/history/all?sort=viewedAt:desc"})
+
+    if show_library == True:
+        plex_endpoints.append({"title": "Plex Library", "endpoint": "/library/recentlyAdded"})
 
     endpoint_map = {"title": "Plex", "endpoint": ""}
     if len(plex_endpoints) > 0:
@@ -105,6 +109,8 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                     if output["MediaContainer"]["size"] > 0:
                         if filter_movie and filter_music and filter_tv:
                             metadata_list = output["MediaContainer"]["Metadata"]
+                            if endpoint_map["title"] != "Plex Library" and len(metadata_list) > 9:
+                                metadata_list = metadata_list[0:9]
                         else:
                             m_list = output["MediaContainer"]["Metadata"]
                             metadata_list = []
@@ -115,9 +121,11 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     metadata_list.append(metadata)
                                 if filter_tv and metadata["type"] == "season":
                                     metadata_list.append(metadata)
+                                if endpoint_map["title"] != "Plex Library" and len(metadata_list) > 9:
+                                    break
 
                         if len(metadata_list) > 0:
-                            random_index = random.number(0, len(metadata_list) - 1)  # 45 test
+                            random_index = random.number(0, len(metadata_list) - 1)
                             metadata_keys = metadata_list[random_index].keys()
 
                             if debug_output:
@@ -342,14 +350,14 @@ def get_schema():
             schema.Toggle(
                 id = "show_recent",
                 name = "Show played",
-                desc = "Show recently played.",
+                desc = "Show 10 last recently played.",
                 icon = "",
                 default = True,
             ),
             schema.Toggle(
                 id = "show_added",
                 name = "Show added",
-                desc = "Show recently added.",
+                desc = "Show 10 last recently added.",
                 icon = "",
                 default = True,
             ),
@@ -357,6 +365,13 @@ def get_schema():
                 id = "show_playing",
                 name = "Show playing",
                 desc = "Show now playing.",
+                icon = "",
+                default = True,
+            ),
+            schema.Toggle(
+                id = "show_library",
+                name = "Show library",
+                desc = "Show Plex library.",
                 icon = "",
                 default = True,
             ),
