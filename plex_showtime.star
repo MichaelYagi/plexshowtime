@@ -243,7 +243,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             if is_clip:
                                 media_type = "Clip"
                             elif metadata_list[random_index]["type"] == "season" or metadata_list[random_index]["type"] == "episode" or metadata_list[random_index]["type"] == "show":
-                                media_type = "TV"
+                                media_type = "Show"
                             elif metadata_list[random_index]["type"] == "album" or metadata_list[random_index]["type"] == "track" or metadata_list[random_index]["type"] == "artist":
                                 media_type = "Music"
                             elif metadata_list[random_index]["type"] == "movie":
@@ -483,7 +483,7 @@ def get_schema():
             ),
             schema.Toggle(
                 id = "filter_tv",
-                name = "Filter by TV shows",
+                name = "Filter by shows",
                 desc = "Show recently added.",
                 icon = "",
                 default = True,
