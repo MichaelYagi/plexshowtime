@@ -67,10 +67,11 @@ def main(config):
     return get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds)
 
 def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, font_color, ttl_seconds):
+    message = ""
     if plex_server_url == "" or plex_api_key == "":
-        return display_banner(debug_output, "Plex API URL and Plex API key must not be blank")
+        message = "Plex API URL and Plex API key must not be blank"
     elif endpoint_map["title"] == "Plex":
-        return display_banner(debug_output, "Select recent, added or played")
+        message = "Select recent, added or played"
     else:
         headerMap = {
             "Accept": "application/json",
@@ -226,7 +227,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                 print("Marquee text: " + marquee_text)
                                 print("Full title: " + header_text + " - " + body_text)
                         else:
-                            return display_banner(debug_output, "No results for " + endpoint_map["title"])
+                            message = "No results for " + endpoint_map["title"]
 
                     if fit_screen == True:
                         rendered_image = render.Image(
@@ -242,13 +243,15 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                     return render_marquee(marquee_text, rendered_image, font_color, debug_output)
 
                 else:
-                    return display_banner(debug_output, "No valid results for " + endpoint_map["title"])
+                    message = "No valid results for " + endpoint_map["title"]
             else:
-                return display_banner(debug_output, "Possible malformed JSON for " + endpoint_map["title"])
+                message = "Possible malformed JSON for " + endpoint_map["title"]
         else:
-            return display_banner(debug_output, "Check API URL & key for " + endpoint_map["title"])
+            message = "Check API URL & key for " + endpoint_map["title"]
 
-def display_banner(debug_output, message = ""):
+    return display_message(debug_output, message)
+
+def display_message(debug_output, message = ""):
     img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, {}, 604800)  # thumb if art not available
     
     if debug_output == False:
