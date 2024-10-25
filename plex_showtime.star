@@ -14,7 +14,7 @@ load("schema.star", "schema")
 load("time.star", "time")
 
 def main(config):
-    random.seed(time.now().unix // 10)
+    random.seed(time.now().unix)
 
     plex_server_url = config.str("plex_server_url", "")
     plex_api_key = config.str("plex_api_key", "")
