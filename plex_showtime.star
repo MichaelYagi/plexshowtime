@@ -169,10 +169,12 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             marquee_text = header_text + " - " + body_text
                             max_length = 59
                             if len(marquee_text) > max_length:
+                                marquee_text = body_text
                                 marquee_text = marquee_text[0:max_length-3] + "..."
 
                             if debug_output:
-                                print(marquee_text)
+                                print("Marquee text: " + marquee_text)
+                                print("Full title: " + header_text + " - " + body_text)
 
                         if fit_screen == True:
                             rendered_image = render.Image(
