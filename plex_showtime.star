@@ -42,7 +42,7 @@ def main(config):
         plex_endpoints.append({"title": "Recently Played", "endpoint": "/status/sessions/history/all?sort=viewedAt:desc"})
 
     if show_library == True:
-        plex_endpoints.append({"title": "Plex Library", "endpoint": "/library/recentlyAdded"})
+        plex_endpoints.append({"title": "Plex Library", "endpoint": "/status/sessions/history/all"})
 
     endpoint_map = {"title": "Plex", "endpoint": ""}
     if len(plex_endpoints) > 0:
