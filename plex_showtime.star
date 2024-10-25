@@ -145,6 +145,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
 
                             img = None
                             art_type = ""
+                            img_url = ""
 
                             is_clip = False
                             for key in metadata_keys:
@@ -156,32 +157,30 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             for key in metadata_keys:
                                 if key == "art":
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
                                     break
                                 if key == "parentArt":
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
                                     break
                                 if key == "grandparentArt":
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
                                     break
                                 elif key == "thumb" and metadata_list[random_index]["thumb"].endswith("/-1") == False:
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
                                 elif key == "parentThumb":
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
                                 elif key == "grandparentThumb":
                                     art_type = key
-                                    img = get_data(base_url + metadata_list[random_index][key], debug_output, headerMap, ttl_seconds)
+
+                            if art_type != "":
+                                img_url = base_url + metadata_list[random_index][art_type]
+                                img = get_data(img_url, debug_output, headerMap, ttl_seconds)
 
                             if img == None:
                                 if debug_output:
                                     print("Media image not detected, using Plex banner")
                                 img = get_data("https://michaelyagi.github.io/images/plex_banner.png", debug_output, headerMap, 604800)
                             elif debug_output:
-                                print("Using thumbnail type: " + art_type)
+                                print("Using thumbnail type: " + art_type + ": " + img_url)
 
                             media_type = "Movie"
                             if is_clip:
