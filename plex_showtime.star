@@ -346,7 +346,7 @@ def display_message(debug_output, message = ""):
             width = 64,
             src = img,
         )
-        return display_message(debug_output, message)
+        return render_marquee(message, rendered_image, "#FF0000")
 
 def render_marquee(message, image, font_color):
     icon_img = base64.decode(PLEX_ICON)
