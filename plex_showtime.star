@@ -312,7 +312,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             src = img,
                         )
 
-                    return render_marquee(marquee_text, rendered_image, font_color, debug_output)
+                    return render_marquee(marquee_text, rendered_image, font_color)
 
                 else:
                     display_message_string = "No valid results for " + endpoint_map["title"]
@@ -345,9 +345,9 @@ def display_message(debug_output, message = ""):
             width = 64,
             src = img,
         )
-        return render_marquee(message, rendered_image, "#FF0000", debug_output)
+        return display_message(debug_output, message)
 
-def render_marquee(message, image, font_color, debug_output):
+def render_marquee(message, image, font_color):
     icon_img = base64.decode(PLEX_ICON)
 
     return render.Root(
