@@ -487,7 +487,7 @@ def get_schema():
                 id = "show_library",
                 name = "Show library",
                 desc = "Show Plex library.",
-                icon = "boxesStacked",
+                icon = "layerGroup",
                 default = True,
             ),
             schema.Toggle(
