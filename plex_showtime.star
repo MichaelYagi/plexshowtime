@@ -126,21 +126,22 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                 if filter_music:
                                     allowable_media.append("artist")
                                 
+                                library_key = 0
                                 if len(allowable_media) > 0:
                                     allowed_media = allowable_media[random.number(0, len(allowable_media) - 1)]
-                                    library_key = 0
                                     for library in library_list:
                                         if library["type"] == allowed_media:
                                             library_key = library["key"]
                                             break
-                                else:
-                                    display_message_string = "Could not get library content"
+                                
 
-                                library_url = base_url + "/library/sections/" + library_key + "/all"
-                                library_content = get_data(library_url, debug_output, headerMap, ttl_seconds)
-                                library_output = json.decode(library_content, None)
-                                if library_output != None and library_output["MediaContainer"]["size"] > 0:
-                                    metadata_list = library_output["MediaContainer"]["Metadata"]
+                                    library_url = base_url + "/library/sections/" + library_key + "/all"
+                                    library_content = get_data(library_url, debug_output, headerMap, ttl_seconds)
+                                    library_output = json.decode(library_content, None)
+                                    if library_output != None and library_output["MediaContainer"]["size"] > 0:
+                                        metadata_list = library_output["MediaContainer"]["Metadata"]
+                                    else:
+                                        display_message_string = "Could not get library content"
                                 else:
                                     display_message_string = "Could not get library content"
                             else:
