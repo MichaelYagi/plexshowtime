@@ -389,6 +389,15 @@ def display_message(debug_output, message_array = []):
 def render_marquee(message_array, image):
     icon_img = base64.decode(PLEX_ICON)
 
+    text_array = []
+    index = 0
+    for message in message_array:
+        if index == len(message_array)-1:
+            text_array.append(render.Text(message["message"], color = message["color"], font = "tom-thumb"))
+        else:
+            text_array.append(render.Text(message["message"] + " ", color = message["color"], font = "tom-thumb"))
+        index = index + 1
+
     return render.Root(
         child = render.Column(
             children = [
@@ -413,10 +422,7 @@ def render_marquee(message_array, image):
                                             width = 64,
                                             offset_start = 64,
                                             offset_end = 64,
-                                            child = render.Row([
-                                                render.Text(message["message"] + " ", color = message["color"], font = "tom-thumb")
-                                                for message in message_array
-                                            ])
+                                            child = render.Row(text_array)
                                         ),
                                     ],
                                 ),
