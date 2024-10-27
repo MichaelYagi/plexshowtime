@@ -423,9 +423,9 @@ def render_marquee(message_array, image):
                                     children = [
                                         render.Marquee(
                                             scroll_direction = "horizontal",
-                                            width = 64,
+                                            width = 57,
                                             offset_start = 64,
-                                            offset_end = 64,
+                                            offset_end = 57,
                                             child = render.Row(text_array)
                                         ),
                                     ],
