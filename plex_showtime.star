@@ -164,6 +164,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                         if library_type == "movie":
                                             media_type = "Movie"
                                         elif library_type == "show":
+                                            # Try to find episodes
                                             library_type_enum = 4
                                             media_type = "Show"
                                         elif library_type == "artist": 
@@ -214,7 +215,7 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                             if len(metadata_list) > 0:
                                 random_index = random.number(0, len(metadata_list) - 1)
                                 if library_type == "artist":
-                                    # Pick an album if available
+                                    # Try to find albums
                                     library_content = get_data(base_url + metadata_list[random_index]["key"], debug_output, headerMap, ttl_seconds)
                                     library_output = json.decode(library_content, None)
                                     if library_output != None and library_output["MediaContainer"]["size"] > 0:
