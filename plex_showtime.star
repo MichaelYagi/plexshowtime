@@ -222,6 +222,8 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                         metadata_list = library_output["MediaContainer"]["Metadata"]
                                         random_index = random.number(0, len(metadata_list) - 1)
 
+                                random_index = 11
+
                                 metadata_keys = metadata_list[random_index].keys()
 
                                 if debug_output:
@@ -361,6 +363,7 @@ def find_valid_image(metadata, base_url, debug_output, headerMap, ttl_seconds):
     metadata_keys = metadata.keys()
 
     # thumb if art not available
+    img = None
     validated_image = ""
     valid_keys = []
     art_found = False
@@ -371,17 +374,22 @@ def find_valid_image(metadata, base_url, debug_output, headerMap, ttl_seconds):
             valid_keys.append(key)
 
     for valid_key in valid_keys:
-        if art_found == True:
-            if valid_key == "art" or valid_key == "parentArt" or valid_key == "grandparentArt":
-                art_type = valid_key
-                img_url = base_url + metadata[art_type]
-                img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+        if art_found == True and (valid_key == "art" or valid_key == "parentArt" or valid_key == "grandparentArt"):
+            art_type = valid_key
+            img_url = base_url + metadata[art_type]
+            img = get_data(img_url, debug_output, headerMap, ttl_seconds)
+            if img != None:
                 break
+
+    for valid_key in valid_keys:
+        if img != None:
+            break
         elif valid_key == "thumb" or valid_key == "parentThumb" or valid_key == "grandparentThumb":
             art_type = valid_key
             img_url = base_url + metadata[art_type]
             img = get_data(img_url, debug_output, headerMap, ttl_seconds)
-            break
+            if img != None:
+                break
 
     return {"img": img, "art_type": art_type, "img_url": img_url, "validated_image": validated_image}
 
