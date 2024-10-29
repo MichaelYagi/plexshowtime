@@ -273,13 +273,13 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     if len(validated_image) > 0:
                                         img = validated_image
                                         if debug_output:
-                                            print("Using thumbnail type " + art_type + ": " + img_url)
+                                            print("Using image type " + art_type + ": " + img_url)
                                     else:
                                         if debug_output:
                                             print("Media image not detected, using Plex banner")
                                         img = base64.decode(PLEX_BANNER)
                                 elif debug_output:
-                                    print("Using thumbnail type " + art_type + ": " + img_url)
+                                    print("Using image type " + art_type + ": " + img_url)
 
                                 media_type = "Movie"
                                 if is_clip:
