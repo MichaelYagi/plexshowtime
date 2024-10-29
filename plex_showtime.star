@@ -54,7 +54,8 @@ def main(config):
 
     endpoint_map = {"title": "None", "endpoint": "", "id": 0}
     if len(plex_endpoints) > 0:
-        endpoint_map = plex_endpoints[int(get_random_index("rand", plex_endpoints, debug_output))]
+        random_endpoint_index = random.number(0, len(plex_endpoints) - 1)
+        endpoint_map = plex_endpoints[random_endpoint_index]
 
     if debug_output:
         print("------------------------------")
@@ -221,8 +222,6 @@ def get_text(plex_server_url, plex_api_key, endpoint_map, debug_output, fit_scre
                                     if library_output != None and library_output["MediaContainer"]["size"] > 0:
                                         metadata_list = library_output["MediaContainer"]["Metadata"]
                                         random_index = random.number(0, len(metadata_list) - 1)
-
-                                random_index = 11
 
                                 metadata_keys = metadata_list[random_index].keys()
 
@@ -499,13 +498,6 @@ def render_marquee(message_array, image, debug_output):
             ],
         ),
     )
-
-
-def get_random_index(item, a_list, debug_output):
-    random_index = random.number(0, len(a_list) - 1)
-    if debug_output:
-        print("Random number for item " + item + ": " + str(random_index))
-    return random_index
 
 def get_data(url, debug_output, headerMap = {}, ttl_seconds = 20):
     res = None
