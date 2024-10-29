@@ -12,4 +12,4 @@ Required fields:
 
 ```Plex server URL``` and ```Plex token```
 
-![Gifs API](https://michaelyagi.github.io/images/api_image_4.gif)
+![Now Playing]([https://michaelyagi.github.io/images/api_image_4.gif](https://raw.githubusercontent.com/MichaelYagi/plexshowtime/refs/heads/main/plex_showtime.gif))
