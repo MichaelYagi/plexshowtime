@@ -405,6 +405,9 @@ def find_valid_image(metadata, base_url, debug_output, headerMap, ttl_seconds):
         img_url = base_url + metadata[art_type]
         img = get_data(img_url, debug_output, headerMap, ttl_seconds)
 
+    if img != None:
+        validated_image = img
+
     return {"img": img, "art_type": art_type, "img_url": img_url, "validated_image": validated_image}
 
 def display_message(debug_output, message_array = []):
