@@ -405,6 +405,7 @@ def find_valid_image(metadata, base_url, debug_output, headerMap, ttl_seconds):
         img_url = base_url + metadata[art_type]
         img = get_data(img_url, debug_output, headerMap, ttl_seconds)
 
+    validated_image = ""
     if img != None:
         validated_image = img
 
