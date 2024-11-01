@@ -620,7 +620,7 @@ def render_marquee(message_array, image, show_summary, debug_output):
                         ),
                         render.Padding(
                             pad = (1, 0, 0, 0),
-                            child = render.Column(
+                            child = render.Stack(
                                 children = [
                                     render.Marquee(
                                         offset_start = 32,
@@ -631,7 +631,13 @@ def render_marquee(message_array, image, show_summary, debug_output):
                                         child = render.Column(
                                             children = text_array,
                                         ),
-                                    )
+                                    ),
+                                    # render.Row(
+                                    #     expanded=True,
+                                    #     cross_align="end",
+                                    #     main_align="end",
+                                    #     children=[render.Image(src = icon_img, width = 7, height = 7)]
+                                    # )
                                 ]
                             )
                         )
