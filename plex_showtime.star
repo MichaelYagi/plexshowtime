@@ -229,7 +229,7 @@ def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen
                                     if library_output != None and library_output["MediaContainer"]["size"] > 0:
                                         metadata_list = library_output["MediaContainer"]["Metadata"]
                                         random_index = random.number(0, len(metadata_list) - 1)
-                                
+
                                 metadata_keys = metadata_list[random_index].keys()
 
                                 if debug_output:
@@ -618,9 +618,7 @@ def render_marquee(message_array, image, show_summary, debug_output):
             )
         )
     else:
-        marquee_width = len(full_message)
-        if marquee_width < 57:
-            marquee_width = 57
+        marquee_width = 57 + ((len(full_message)) - ((len(full_message)) * 0.9))
 
         return render.Root(
             show_full_animation = True,
@@ -644,7 +642,7 @@ def render_marquee(message_array, image, show_summary, debug_output):
                                         children = [
                                             render.Marquee(
                                                 scroll_direction = "horizontal",
-                                                width = marquee_width,
+                                                width = int(marquee_width),
                                                 offset_start = 64,
                                                 offset_end = 57,
                                                 child = render.Row(text_array)
