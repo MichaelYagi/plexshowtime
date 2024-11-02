@@ -132,6 +132,7 @@ def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen
                     else:
                         img = base64.decode(PLEX_BANNER)
 
+                    # Get media list and filter
                     if output["MediaContainer"]["size"] > 0:
                         # Check if has needed keys
                         valid_media_container_key = False
@@ -222,6 +223,7 @@ def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen
                                     if endpoint_map["id"] != 4 and len(metadata_list) > GET_TOP:
                                         break
 
+                            # Process text
                             if len(metadata_list) > 0:
                                 random_index = random.number(0, len(metadata_list) - 1)
                                 if library_type == "artist":
