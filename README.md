@@ -1,4 +1,4 @@
-This is one of my apps for the TidByt. It pulls media data from a Plex server using a Plex token. 
+This is one of my apps for the TidByt. It randomly pulls media data from a Plex server using a Plex token. 
 
 You can choose from many options.
 
