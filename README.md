@@ -2,7 +2,7 @@ This is one of my apps for the TidByt. It randomly pulls media data from a Plex 
 
 You can choose from many options.
 
-<img src="https://github.com/user-attachments/assets/abed7998-bbb4-4c22-91ef-11ccc6350787" alt="screenshot" height="500"/>
+<img src="https://github.com/user-attachments/assets/95cd84e3-2194-4c70-9d5a-3e6133c9ff71" alt="screenshot" height="500"/>
 
 This repo is intended as a testing and staging area before things get pushed to https://github.com/tidbyt/community/tree/main/apps/plexshowtime.
 
