@@ -25,6 +25,7 @@ def main(config):
     plex_server_url = config.str("plex_server_url", "")
     plex_token = config.str("plex_token", "")
     show_heading = config.bool("show_heading", True)
+    show_only_artwork = config.bool("show_only_artwork", False)
     heading_color = config.str("heading_color", "#FFA500")
     font_color = config.str("font_color", "#FFFFFF")
     show_summary = config.bool("show_summary", False)
@@ -75,13 +76,14 @@ def main(config):
         print("CONFIG - filter_tv: " + str(filter_tv))
         print("CONFIG - filter_music: " + str(filter_music))
         print("CONFIG - show_heading: " + str(show_heading))
+        print("CONFIG - show_only_artwork: " + str(show_only_artwork))
         print("CONFIG - heading_color: " + heading_color)
         print("CONFIG - font_color: " + font_color)
         print("CONFIG - fit_screen: " + str(fit_screen))
 
-    return get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, show_heading, show_summary, heading_color, font_color, ttl_seconds)
+    return get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, show_heading, show_only_artwork, show_summary, heading_color, font_color, ttl_seconds)
 
-def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, show_heading, show_summary, heading_color, font_color, ttl_seconds):
+def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen, filter_movie, filter_tv, filter_music, show_heading, show_only_artwork, show_summary, heading_color, font_color, ttl_seconds):
     base_url = plex_server_url
     if base_url.endswith("/"):
         base_url = base_url[0:len(base_url) - 1]
@@ -423,12 +425,22 @@ def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen
                     # img = base64.decode(PLEX_BANNER_PORTRAIT)
                     # using_portrait_banner = True
 
-                    if show_summary:
+                    if show_summary and show_only_artwork == False:
                         rendered_image = render.Image( 
                             width = 22,
                             src = img,
                         )
-                    elif fit_screen:
+                    elif fit_screen and show_only_artwork == False:
+                        rendered_image = render.Image(
+                            width = 64,
+                            src = img,
+                        )
+                    elif fit_screen and show_only_artwork == True:
+                        rendered_image = render.Image(
+                            height = 32,
+                            src = img,
+                        )
+                    elif fit_screen == False and show_only_artwork == True:
                         rendered_image = render.Image(
                             width = 64,
                             src = img,
@@ -439,7 +451,7 @@ def get_text(plex_server_url, plex_token, endpoint_map, debug_output, fit_screen
                             src = img,
                         )
 
-                    return render_marquee(marquee_text_array, rendered_image, show_summary, debug_output, using_portrait_banner)
+                    return render_marquee(show_only_artwork, marquee_text_array, rendered_image, show_summary, debug_output, using_portrait_banner)
 
                 else:
                     display_message_string = "No valid results for " + endpoint_map["title"]
@@ -576,9 +588,9 @@ def display_message(debug_output, message_array = [], show_summary = False):
             width = 64,
             src = img,
         )
-        return render_marquee(message_array, rendered_image, show_summary, debug_output)
+        return render_marquee(False, message_array, rendered_image, show_summary, debug_output)
 
-def render_marquee(message_array, image, show_summary, debug_output, using_portrait_banner = False):
+def render_marquee(show_only_artwork, message_array, image, show_summary, debug_output, using_portrait_banner = False):
     icon_img = base64.decode(PLEX_ICON)
 
     text_array = []
@@ -638,7 +650,7 @@ def render_marquee(message_array, image, show_summary, debug_output, using_portr
     if show_summary == False and debug_output:
         print("Marquee text: " + full_message)
 
-    if show_summary:
+    if show_summary and show_only_artwork == False:
         marquee_height = 32 + ((heading_lines + title_lines + body_lines) - ((heading_lines + title_lines + body_lines) * 0.62))
 
         children = [
@@ -688,6 +700,18 @@ def render_marquee(message_array, image, show_summary, debug_output, using_portr
                     ]
                 )
             )
+        )
+    elif show_only_artwork == True:
+        return render.Root(
+            show_full_animation = True,
+            child = render.Row(
+                expanded = True,
+                main_align = "space_evenly",
+                cross_align = "center",
+                children = [
+                    image
+                ],
+            ),
         )
     else:
         marquee_width = 57 + ((len(full_message)) - ((len(full_message)) * 0.9))
@@ -848,7 +872,7 @@ def get_schema():
             schema.Text(
                 id = "plex_server_url",
                 name = "Plex server URL (required)",
-                desc = "Your Plex erver URL.",
+                desc = "Your Plex server URL.",
                 icon = "globe",
                 default = "",
             ),
@@ -865,6 +889,13 @@ def get_schema():
                 desc = "Display the media and library view type.",
                 icon = "eye",
                 default = True,
+            ),
+            schema.Toggle(
+                id = "show_only_artwork",
+                name = "Show Only Artwork",
+                desc = "Display only the artwork.",
+                icon = "eye",
+                default = False,
             ),
             schema.Text(
                 id = "heading_color",
